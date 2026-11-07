@@ -1,0 +1,11 @@
+# Dependências
+node_modules/
+
+# Arquivos compilados
+dist/
+
+# Source Maps
+*.map
+
+# Variáveis de ambiente
+.env
