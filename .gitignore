@@ -6,6 +6,7 @@ dist/
 
 # Source Maps
 *.map
+*.d.ts
 
 # Variáveis de ambiente
 .env
