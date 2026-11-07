@@ -35,40 +35,63 @@ class animaisController {
         }
     }
 
-    static alterarAnimal (
-        req: FastifyRequest <{Body: animalInterface}>,
-        res:FastifyReply){
-            try{
-                const animal=req.body;
-                const index: number= animaisList.findIndex(a => a.id===animal.id)
+    static alterarAnimal(
+    req: FastifyRequest<{
+        Params: { id: string };
+        Body: Omit<animalInterface, 'id'>;
+    }>,
+    res: FastifyReply
+) {
+    try {
+        const id = Number(req.params.id);
+        const animal = req.body;
 
-                if (index === -1){
-                    return res.status(404).send({message: `Animal não encontrado`})
-                }
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).send({
+                message: 'ID inválido'
+            });
+        }
 
-                if (animal.peso<=0){
-                    return res.status(400).send({message: `Peso deve ser maior que 0`})
-                }
+        const index = animaisList.findIndex(
+            a => a.id === id
+        );
 
-            
-                if (animal.idade<0){
-                    return res.status(400).send({message: `Idade não pode ser negativa`})
-                }
+        if (index === -1) {
+            return res.status(404).send({
+                message: 'Animal não encontrado'
+            });
+        }
 
-                animaisList[index]=animal
+        if (animal.peso <= 0) {
+            return res.status(400).send({
+                message: 'Peso deve ser maior que 0'
+            });
+        }
 
-                return res.status(200).send({
-                    message: 'Dados do animal alterados com sucesso',
-                    animal
-                })
+        if (animal.idade < 0) {
+            return res.status(400).send({
+                message: 'Idade não pode ser negativa'
+            });
+        }
 
-            }
-            catch(erro){
-                return res.status(500).send({message: `${erro} - Falha ao alterar dados do animal` })
-            }
+        const animalAtualizado = {
+            id,
+            ...animal
+        };
 
+        animaisList[index] = animalAtualizado;
 
+        return res.status(200).send({
+            message: 'Dados do animal alterados com sucesso',
+            animal: animalAtualizado
+        });
+
+    } catch (erro) {
+        return res.status(500).send({
+            message: 'Falha ao alterar dados do animal'
+        });
     }
+}
 
     static deletarAnimal (
         req: FastifyRequest <{Params: {id:number}}>,
@@ -98,11 +121,6 @@ class animaisController {
         }
 
     }
-
-
-
-
-
 
 
     static listarAnimais(req: FastifyRequest, res: FastifyReply){

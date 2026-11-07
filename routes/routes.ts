@@ -44,6 +44,7 @@ export const routes = (server: FastifyInstance) => {
         schema:{
             body:{
                 type: 'object',
+                additionalProperties: false,
                 properties:{
                     id:{
                         type:'integer'
@@ -81,46 +82,42 @@ export const routes = (server: FastifyInstance) => {
         },
     handler: animaisController.cadastrarAnimal});
 
-    server.put <{Body: animalInterface}> ('/animais',{
-        schema:{
-            body:{
-                type: 'object',
-                properties:{
-                    id:{
-                        type:'integer'
-                    },
-                    nome:{
-                        type:'string'
-                    },
-                    especie:{
-                        type:'string'
-                    },
-                    raca:{
-                        type:'string'
-                    },
-                    idade:{
-                        type:'integer'
-                    },
-                    sexo:{
-                        type:'string'
-                    },
-                    peso:{
-                        type:'number'
-                    }
-
-                },
-                required:[
-                    'id',
-                    'nome',
-                    'especie',
-                    'raca',
-                    'idade',
-                    'sexo',
-                    'peso'
-                ]
-            }
+    server.put<{
+    Params: { id: string };
+    Body: Omit<animalInterface, 'id'>;
+}>('/animais/:id', {
+    schema: {
+        params: {
+            type: 'object',
+            
+            properties: {
+                id: { type: 'string' }
+            },
+            required: ['id']
         },
-    handler: animaisController.alterarAnimal});
+        body: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+                nome: { type: 'string' },
+                especie: { type: 'string' },
+                raca: { type: 'string' },
+                idade: { type: 'integer' },
+                sexo: { type: 'string' },
+                peso: { type: 'number' }
+            },
+            required: [
+                'nome',
+                'especie',
+                'raca',
+                'idade',
+                'sexo',
+                'peso'
+            ]
+        }
+    },
+    handler: animaisController.alterarAnimal
+});
 
     server.delete <{Params: {id: number}}> ('/animais/:id',{
         schema:{
